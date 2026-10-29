@@ -1,0 +1,11 @@
+[package]
+name = "es-market"
+description = "Market state: quotes, depth, option chain, OI, momentum and IV"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
+serde.workspace = true

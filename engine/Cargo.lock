@@ -43,6 +43,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "es-market"
+version = "0.1.0"
+dependencies = [
+ "es-core",
+ "serde",
+]
+
+[[package]]
 name = "es-replay"
 version = "0.1.0"
 dependencies = [
