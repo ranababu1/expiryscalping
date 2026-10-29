@@ -1,0 +1,18 @@
+[package]
+name = "es-oms"
+description = "Order manager: order state machine, Kite limits, positions and P&L"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
+es-risk.workspace = true
+es-broker.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+es-risk = { workspace = true, features = ["test-util"] }

@@ -75,6 +75,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "es-oms"
+version = "0.1.0"
+dependencies = [
+ "es-broker",
+ "es-core",
+ "es-risk",
+ "serde",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "es-replay"
 version = "0.1.0"
 dependencies = [
