@@ -1,0 +1,13 @@
+[package]
+name = "es-kite"
+description = "Kite Connect v3 wire formats: binary tick parser, instrument master, text messages"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
