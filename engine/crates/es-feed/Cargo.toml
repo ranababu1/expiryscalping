@@ -1,0 +1,10 @@
+[package]
+name = "es-feed"
+description = "Feed records and feed health. The live Kite connection manager arrives in Phase 2"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
