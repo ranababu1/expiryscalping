@@ -39,7 +39,7 @@
     <section class="panel card">
       <h3>Tick latency</h3>
       <dl>
-        <dt>p50</dt><dd class="num">{int(s.latency.p50_us)} µs</dd>
+        <dt>p50</dt><dd class="num">{s.latency.p50_us === 0 ? "<1" : int(s.latency.p50_us)} µs</dd>
         <dt>p99</dt><dd class="num">{int(s.latency.p99_us)} µs</dd>
         <dt>Samples</dt><dd class="num">{int(s.latency.samples)}</dd>
       </dl>
