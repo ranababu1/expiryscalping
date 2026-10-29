@@ -47,6 +47,8 @@ struct PaperOrder {
     limit: Option<Paise>,
     order_type: OrderType,
     protection_pct: u32,
+    /// Exchange fills come in whole lots.
+    lot: u32,
     eligible_at: Ts,
     /// Receive time of the depth snapshot last matched, to use each once.
     last_matched: Option<Ts>,
@@ -136,22 +138,27 @@ impl PaperBroker {
                     }
                 }
             };
-            let mut remaining = o.qty - o.filled;
-            for l in levels.iter().filter(|l| l.qty > 0 && l.price.0 > 0) {
+            let ok = |p: Paise| match o.side {
+                Side::Buy => p <= bound,
+                Side::Sell => p >= bound,
+            };
+            let usable: Vec<(u32, Paise)> = levels
+                .iter()
+                .filter(|l| l.qty > 0 && l.price.0 > 0)
+                .take_while(|l| ok(l.price))
+                .map(|l| (l.qty, l.price))
+                .collect();
+            let available: u32 = usable.iter().map(|(q, _)| *q).sum();
+            let want = (o.qty - o.filled).min(available);
+            let mut remaining = want - want % o.lot;
+            for (lq, lp) in usable {
                 if remaining == 0 {
                     break;
                 }
-                let ok = match o.side {
-                    Side::Buy => l.price <= bound,
-                    Side::Sell => l.price >= bound,
-                };
-                if !ok {
-                    break;
-                }
-                let q = remaining.min(l.qty);
+                let q = remaining.min(lq);
                 let price = match o.side {
-                    Side::Buy => Paise(l.price.0 + slip),
-                    Side::Sell => Paise((l.price.0 - slip).max(1)),
+                    Side::Buy => Paise(lp.0 + slip),
+                    Side::Sell => Paise((lp.0 - slip).max(1)),
                 };
                 fills.push((i, q, price));
                 remaining -= q;
@@ -205,6 +212,7 @@ impl Broker for PaperBroker {
             limit: req.limit(),
             order_type: req.order_type(),
             protection_pct: req.market_protection_pct(),
+            lot: (req.qty() / req.lots().max(1)).max(1),
             eligible_at,
             last_matched: None,
             status: BrokerOrderStatus::Open,

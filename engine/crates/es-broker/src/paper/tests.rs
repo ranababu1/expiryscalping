@@ -220,3 +220,18 @@ async fn kite_stub_is_not_available() {
         Err(BrokerError::NotAvailable(_))
     ));
 }
+
+#[tokio::test]
+async fn fills_only_whole_lots() {
+    let b = instant();
+    let mut t = tick(0);
+    if let Some(d) = t.depth.as_mut() {
+        d.asks[0] = lv(10_000, 50); // less than one lot of 65
+        d.asks[1] = lv(10_005, 100);
+        d.asks[2] = lv(10_010, 0);
+    }
+    b.on_tick(&t);
+    b.place(&buy(3, 10_005), "T").await.unwrap();
+    // 150 available up to the limit: 2 lots = 130, split 50 + 80.
+    assert_eq!(fills(&events(&b)), vec![(50, 10_000), (80, 10_005)]);
+}
