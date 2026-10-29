@@ -3,12 +3,12 @@
 **Phase:** 1 (engine core, paper trading, desktop app on simulated and replayed ticks)
 
 ## What works
-- Engine (v0.1.0): Kite tick parser, raw log, simulator and replay, market state, momentum strategy, risk engine with kill switch, order manager, paper broker with charges.
+- Engine (v0.2.0): Kite tick parser, raw log, simulator and replay, market state, momentum strategy, risk engine with kill switch, order manager, paper broker with charges.
 - `esd sim` and `esd replay` run a full paper trading day headless or with the client API on 127.0.0.1:7400.
-- Replays are deterministic (tested).
+- Replays are deterministic (tested). The client API is tested end to end over a WebSocket.
 
 ## In progress
-- Client API end-to-end test against esd, then the Tauri 2 and Svelte desktop app.
+- Tauri 2 and Svelte desktop app.
 
 ## Next steps
 - Desktop app screens: Status, Chain, Positions, Orders, Strategies, Risk, kill switch, manual ticket.
@@ -29,4 +29,4 @@
 2026-10-30
 
 ## Last commit
-`chore(release): bump version to 0.1.0` (see `git log -1`).
+`chore(release): bump version to 0.2.0` (see `git log -1`).

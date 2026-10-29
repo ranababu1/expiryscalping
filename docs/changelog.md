@@ -2,6 +2,24 @@
 
 Newest first. Every release gets an entry. Format is in docs/instructions.md.
 
+## 2026-10-30 (release: v0.2.0 - client API served by the engine)
+
+### Added
+- esd serves the client WebSocket API on 127.0.0.1:7400 while it paper trades: status, chain, positions, orders, fills, risk, strategies and alerts streams, plus every command the app needs (kill, re-arm, pause, strategy on and off, risk limits, place, modify, cancel, exit, exit all, chain selection).
+- First run creates a "desktop" device token and prints it once. `esd device add|list|revoke` manages more.
+- End-to-end test over a real WebSocket (bin/esd/tests/api.rs): bad token refused, hello and snapshots arrive, the kill switch acks, alerts and shows in status.
+
+### Changed
+- The Strategy trait requires Send + Sync so the engine loop can run as a spawned task.
+
+### Verification
+- cargo test --workspace: passed (162 tests)
+- cargo clippy --workspace --all-targets -- -D warnings: clean
+
+### Git
+- Commits: `6b8094c`, plus this release commit
+- Pushed to GitHub: yes
+
 ## 2026-10-30 (release: v0.1.0 - engine core, headless paper trading)
 
 ### Added
