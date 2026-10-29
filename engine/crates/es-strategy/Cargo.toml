@@ -1,0 +1,13 @@
+[package]
+name = "es-strategy"
+description = "Strategy trait and rule-based strategies. Strategies emit signals only"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
+es-market.workspace = true
+serde.workspace = true
+tracing.workspace = true
