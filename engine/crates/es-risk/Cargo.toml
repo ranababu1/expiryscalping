@@ -1,0 +1,16 @@
+[package]
+name = "es-risk"
+description = "Risk engine: every order passes here. Limits, kill switch, rate cap"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
