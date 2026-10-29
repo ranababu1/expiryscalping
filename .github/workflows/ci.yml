@@ -45,11 +45,16 @@ jobs:
 
   desktop-shell:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: app/src-tauri
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      # tauri::generate_context! needs the built frontend in app/dist.
+      - run: npm ci && npm run build
+        working-directory: app
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
@@ -57,6 +62,7 @@ jobs:
         with:
           workspaces: app/src-tauri
       - run: cargo clippy --all-targets -- -D warnings
+        working-directory: app/src-tauri
 
   research:
     runs-on: ubuntu-latest
