@@ -25,6 +25,8 @@ jobs:
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo test --workspace
+      - name: Generated TypeScript types are up to date
+        run: git diff --exit-code -- ../app/src/lib/api/types
 
   app:
     runs-on: ubuntu-latest
