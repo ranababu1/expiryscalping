@@ -1,6 +1,6 @@
 [project]
 name = "es-research"
-version = "0.2.0"
+version = "0.3.0"
 description = "ExpiryScalping offline research: reads archived data, never trades"
 requires-python = ">=3.12"
 dependencies = []

@@ -2,6 +2,38 @@
 
 Newest first. Every release gets an entry. Format is in docs/instructions.md.
 
+## 2026-10-30 (release: v0.3.0 - Phase 1 complete: desktop app on paper)
+
+### Added
+- Desktop app (app/): Svelte 5, TypeScript strict, Vite, using the API types generated from Rust. Dark, minimal layout with a top bar (mode, source, engine time IST, feed health, p99 latency, total P&L, Pause AI, KILL) and six screens: Status, Chain, Positions, Orders, Strategies, Risk.
+- Manual intervention: buy ticket from any chain LTP (lots and an optional limit), Modify and Cancel on working orders, Exit per position, Exit all with a confirm, Pause and Resume AI, strategy on and off, risk limits editor with the loosening confirmation, re-arm.
+- Hold-to-confirm kill switch (about 1.2 s, mouse or keyboard), with component tests.
+- Engine client with auth first, request ids, replies, timeouts and reconnect with backoff. Loading, empty, error (toasts) and disconnected (banner, dimmed data) states.
+- Connect screen. The device token is stored in Windows Credential Manager through the Tauri shell (keyring), or kept in memory only in a plain browser.
+- Tauri 2 shell (app/src-tauri) with token commands, icons and NSIS and MSI bundle targets.
+- research/ scaffold: uv project, ruff, raw tick log reader with tests.
+- deploy/ placeholder README, root README (Windows paper mode steps, config, risk disclaimer).
+- GitHub Actions CI: engine fmt, clippy, tests and a stale generated types check; app check, tests and build; desktop shell clippy on Windows; research ruff and pytest.
+
+### Changed
+- StatusDto field docs for `source` and `kite` match what the engine sends.
+- .gitignore covers `.eslog` recordings and the Tauri gen/ folder.
+
+### Fixed
+- p50 latency under one microsecond shows as "<1 µs" instead of 0.
+
+### Verification
+- cargo test --workspace: passed (162 tests)
+- cargo clippy --workspace --all-targets -- -D warnings: clean; cargo fmt --check: clean
+- app: npm run check (0 errors, 0 warnings), npm test (23 tests), npm run build: passed
+- app/src-tauri: cargo clippy --all-targets -- -D warnings clean; `tauri build --bundles deb` built on Linux; CI clippy on windows-latest green
+- research: ruff check, ruff format --check, pytest (3 tests): passed
+- Browser smoke test against `esd sim`: connect, chain, place a manual buy, orders and positions update, short press does not kill, hold kills and flattens, re-arm, edit limits, pause AI, disconnect banner when the engine stops.
+
+### Git
+- Commits: `fe38e42` to `1f2e9a7`, plus this release commit
+- Pushed to GitHub: yes
+
 ## 2026-10-30 (release: v0.2.0 - client API served by the engine)
 
 ### Added

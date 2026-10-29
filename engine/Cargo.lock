@@ -209,7 +209,7 @@ dependencies = [
 
 [[package]]
 name = "es-api"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "futures-util",
  "getrandom",
@@ -226,7 +226,7 @@ dependencies = [
 
 [[package]]
 name = "es-archiver"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-core",
  "es-feed",
@@ -235,7 +235,7 @@ dependencies = [
 
 [[package]]
 name = "es-broker"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "async-trait",
  "es-core",
@@ -248,7 +248,7 @@ dependencies = [
 
 [[package]]
 name = "es-core"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "serde",
  "thiserror",
@@ -256,14 +256,14 @@ dependencies = [
 
 [[package]]
 name = "es-feed"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-core",
 ]
 
 [[package]]
 name = "es-kite"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-core",
  "serde",
@@ -273,7 +273,7 @@ dependencies = [
 
 [[package]]
 name = "es-market"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-core",
  "serde",
@@ -281,7 +281,7 @@ dependencies = [
 
 [[package]]
 name = "es-oms"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-broker",
  "es-core",
@@ -293,7 +293,7 @@ dependencies = [
 
 [[package]]
 name = "es-replay"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-archiver",
  "es-core",
@@ -307,7 +307,7 @@ dependencies = [
 
 [[package]]
 name = "es-risk"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-core",
  "serde",
@@ -318,7 +318,7 @@ dependencies = [
 
 [[package]]
 name = "es-strategy"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "es-core",
  "es-market",
@@ -328,7 +328,7 @@ dependencies = [
 
 [[package]]
 name = "esd"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "clap",
  "es-api",
