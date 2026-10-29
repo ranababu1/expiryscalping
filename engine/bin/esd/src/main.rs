@@ -101,6 +101,7 @@ async fn main() -> ExitCode {
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
         )
+        .with_writer(std::io::stderr)
         .init();
     match real_main().await {
         Ok(()) => ExitCode::SUCCESS,
@@ -214,7 +215,7 @@ async fn serve(
     devices_path: &Path,
     source: String,
     records: mpsc::Receiver<es_feed::RawRecord>,
-    recorder: Option<std::sync::mpsc::Sender<es_feed::RawRecord>>,
+    recorder: Option<esd::Recorder>,
     headless: bool,
 ) -> Result<(), String> {
     let (limits, from) = esd::load_risk(risk_path, &cfg.data_dir).map_err(|e| e.to_string())?;
@@ -264,6 +265,10 @@ async fn serve(
         drop(cmd_tx);
     }
 
+    let (recorder, recorder_thread) = match recorder {
+        Some((tx, h)) => (Some(tx), Some(h)),
+        None => (None, None),
+    };
     let stop = async {
         let _ = tokio::signal::ctrl_c().await;
     };
@@ -279,6 +284,11 @@ async fn serve(
         stop,
     )
     .await;
+    if let Some(h) = recorder_thread
+        && h.join().is_err()
+    {
+        error!("recorder thread panicked");
+    }
     if headless {
         print_summary(&engine);
     }

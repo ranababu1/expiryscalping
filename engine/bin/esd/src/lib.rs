@@ -40,7 +40,14 @@ pub fn wall_ms() -> i64 {
 
 /// Writes records to a raw log on its own thread so disk never blocks the
 /// engine loop.
-pub fn spawn_recorder(path: &Path) -> std::io::Result<std::sync::mpsc::Sender<RawRecord>> {
+pub type Recorder = (
+    std::sync::mpsc::Sender<RawRecord>,
+    std::thread::JoinHandle<()>,
+);
+
+/// Returns the sender and the writer thread; drop the sender, then join the
+/// thread so the log is complete before the process exits.
+pub fn spawn_recorder(path: &Path) -> std::io::Result<Recorder> {
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir)?;
     }
@@ -48,7 +55,7 @@ pub fn spawn_recorder(path: &Path) -> std::io::Result<std::sync::mpsc::Sender<Ra
     let mut w = RawLogWriter::new(std::io::BufWriter::new(file)).map_err(std::io::Error::other)?;
     let (tx, rx) = std::sync::mpsc::channel::<RawRecord>();
     let shown = path.display().to_string();
-    std::thread::spawn(move || {
+    let handle = std::thread::spawn(move || {
         let mut n: u64 = 0;
         for r in rx {
             if let Err(e) = w.write(&r) {
@@ -62,7 +69,7 @@ pub fn spawn_recorder(path: &Path) -> std::io::Result<std::sync::mpsc::Sender<Ra
         }
         info!(records = n, file = %shown, "recorder: done");
     });
-    Ok(tx)
+    Ok((tx, handle))
 }
 
 pub struct RunOptions {

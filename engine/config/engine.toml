@@ -85,7 +85,7 @@ spot_rupees = 24000
 strike_step_rupees = 50
 lot_size = 65
 tick_size_paise = 5
-strikes_each_side = 3
+strikes_each_side = 10
 vol_pct = 16.0
 
 [[sim.underlyings]]
@@ -97,5 +97,5 @@ spot_rupees = 80000
 strike_step_rupees = 100
 lot_size = 20
 tick_size_paise = 5
-strikes_each_side = 3
+strikes_each_side = 10
 vol_pct = 16.0
