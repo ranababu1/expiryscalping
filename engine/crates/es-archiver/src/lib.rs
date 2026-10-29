@@ -69,7 +69,9 @@ impl<R: Read> RawLogReader<R> {
     pub fn new(inner: R) -> Result<Self, RawLogError> {
         let mut input = BufReader::new(inner);
         let mut magic = [0u8; 6];
-        input.read_exact(&mut magic).map_err(|_| RawLogError::BadMagic)?;
+        input
+            .read_exact(&mut magic)
+            .map_err(|_| RawLogError::BadMagic)?;
         if &magic != MAGIC {
             return Err(RawLogError::BadMagic);
         }
@@ -79,9 +81,8 @@ impl<R: Read> RawLogReader<R> {
     /// Reads the next record. `Ok(None)` at a clean end of file.
     pub fn next_record(&mut self) -> Result<Option<RawRecord>, RawLogError> {
         let mut kind = [0u8; 1];
-        match self.input.read(&mut kind)? {
-            0 => return Ok(None),
-            _ => {}
+        if self.input.read(&mut kind)? == 0 {
+            return Ok(None);
         }
         let kind = RecordKind::from_u8(kind[0]).ok_or(RawLogError::BadKind(kind[0]))?;
         let mut ts = [0u8; 8];
