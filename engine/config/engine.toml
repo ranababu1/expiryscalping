@@ -1,0 +1,101 @@
+# ExpiryScalping engine configuration.
+#
+# Imran: these are starting values. Change them to suit you.
+# Money is always in paise (1 rupee = 100 paise). Times are IST, "HH:MM".
+
+# Only "paper" works in Phase 1. Live trading arrives in Phase 3.
+mode = "paper"
+# Raw tick logs, journals, device tokens and saved risk overrides.
+# Relative to this file's folder.
+data_dir = "../data"
+# Client API (desktop app). Keep it on 127.0.0.1 unless you know why.
+api_bind = "127.0.0.1:7400"
+
+[timing]
+timer_ms = 250             # engine timer step, in tick time
+publish_ms = 200           # snapshots to the app, wall clock
+entry_timeout_ms = 3000    # cancel unfilled entries after this
+exit_chase_ms = 2000       # re-price a working exit after this
+market_exit_after_ms = 6000  # then send it as a protected market order
+sent_timeout_ms = 5000     # no broker answer: mark Unknown and reconcile
+
+[market.hours]
+open = "09:15"
+close = "15:30"
+
+[[market.underlyings]]
+name = "NIFTY"
+index_token = 256265
+
+[[market.underlyings]]
+name = "SENSEX"
+index_token = 265
+
+[paper]
+latency_ms = 10
+slippage_paise = 0
+capital = 10000000         # Rs 1,00,000
+
+# Charges per fill. VERIFY these against Zerodha's current charges page
+# before trusting paper P&L. Rates are parts per 100,000,000 (1e8).
+[charges]
+brokerage_per_order = 2000 # Rs 20 per executed order
+stt_sell_e8 = 100000       # 0.1% of premium on sell side
+exchange_nse_e8 = 35030    # 0.03503% NSE options
+exchange_bse_e8 = 32500    # 0.0325% BSE options
+sebi_e8 = 100              # Rs 10 per crore
+stamp_buy_e8 = 3000        # 0.003% on buy side
+gst_e8 = 18000000          # 18% on brokerage + exchange + SEBI
+
+# Kite Connect API limits (the OMS stays under these).
+[kite_limits]
+per_sec = 9
+per_min = 390
+per_day = 4900
+max_modifications = 25
+
+# The one Phase 1 rule strategy. See engine/crates/es-strategy/src/momentum.rs.
+[strategies.momentum]
+enabled = true
+
+[strategies.momentum.params]
+underlying = "NIFTY"
+lots = 1
+warmup_ms = 300000         # watch 5 minutes before the first entry
+lookback_ms = 60000        # momentum window
+trigger_points = 1500      # index move of Rs 15 (15 points) in the window
+target_bps = 2000          # +20% on premium
+stop_bps = 1000            # -10% on premium
+time_stop_ms = 180000      # exit after 3 minutes regardless
+cooldown_ms = 120000       # wait 2 minutes after an exit
+
+# Simulated market for paper mode without Kite (deterministic per seed).
+[sim]
+seed = 7
+step_ms = 1000
+start = "09:15"
+end = "15:30"
+
+[[sim.underlyings]]
+name = "NIFTY"
+index_token = 256265
+index_symbol = "NIFTY 50"
+exchange = "NFO"
+spot_rupees = 24000
+strike_step_rupees = 50
+lot_size = 65
+tick_size_paise = 5
+strikes_each_side = 3
+vol_pct = 16.0
+
+[[sim.underlyings]]
+name = "SENSEX"
+index_token = 265
+index_symbol = "SENSEX"
+exchange = "BFO"
+spot_rupees = 80000
+strike_step_rupees = 100
+lot_size = 20
+tick_size_paise = 5
+strikes_each_side = 3
+vol_pct = 16.0

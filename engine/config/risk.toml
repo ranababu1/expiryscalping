@@ -1,0 +1,29 @@
+# ExpiryScalping risk limits.
+#
+# Imran: CHANGE THESE to match your capital and comfort. They are the plan's
+# suggested defaults for about Rs 1 lakh. Money is in paise (Rs 1 = 100).
+#
+# The risk engine cannot be turned off. You can tighten limits from the app
+# at any time; loosening needs an explicit confirm and is written to the audit
+# log. Saved changes go to data/risk_limits.json, which overrides this file
+# (delete it to go back to these values).
+
+[limits]
+daily_max_loss = 200000         # Rs 2,000: kill switch for the rest of the day
+per_trade_max_premium = 1500000 # Rs 15,000 premium per entry
+per_trade_max_lots = 1
+max_open_positions = 2
+max_trades_per_day = 20
+max_orders_per_sec = 2
+max_orders_per_min = 60
+entry_start = "09:20"
+entry_end = "15:00"
+flatten_at = "15:15"            # everything is closed at this time
+expiry_day_only = true          # trade only contracts expiring today
+stale_after_ms = 1500           # no entries on quotes older than this
+max_spread_bps = 200            # no entries if spread is over 2% of mid
+loss_streak_pause = 3           # losing trades in a row before a pause
+loss_pause_minutes = 15
+margin_check = true
+limit_buffer_ticks = 2          # marketable limit = best ask + 2 ticks
+market_protection_pct = 3       # for emergency market exits

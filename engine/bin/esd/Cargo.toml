@@ -1,0 +1,36 @@
+[package]
+name = "esd"
+description = "ExpiryScalping engine daemon: wires feed, market state, strategies, risk, order manager, broker and the client API"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+name = "esd"
+path = "src/lib.rs"
+
+[[bin]]
+name = "esd"
+path = "src/main.rs"
+
+[dependencies]
+es-core.workspace = true
+es-kite.workspace = true
+es-feed.workspace = true
+es-market.workspace = true
+es-strategy.workspace = true
+es-risk.workspace = true
+es-oms.workspace = true
+es-broker.workspace = true
+es-archiver.workspace = true
+es-api.workspace = true
+es-replay.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tokio = { workspace = true, features = ["signal"] }
+clap = { version = "4.6.7", features = ["derive"] }
+toml = "1.1.8"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

@@ -6,6 +6,10 @@ pub mod charges;
 pub mod kite;
 pub mod paper;
 
+pub use charges::ChargesConfig;
+pub use kite::KiteBroker;
+pub use paper::{PaperBroker, PaperConfig};
+
 use async_trait::async_trait;
 use es_core::{OrderType, Paise, Side, Ts};
 use es_risk::{ApprovedModify, OrderRequest};

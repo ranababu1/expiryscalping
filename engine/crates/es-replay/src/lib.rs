@@ -9,6 +9,8 @@
 pub mod rng;
 pub mod sim;
 
+pub use sim::{SimConfig, SimUnderlying, Simulator, example_config};
+
 use es_archiver::{RawLogError, RawLogReader};
 use es_feed::RawRecord;
 use std::fs::File;
