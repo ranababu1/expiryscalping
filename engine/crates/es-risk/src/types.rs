@@ -76,6 +76,29 @@ pub struct OrderRequest {
 }
 
 impl OrderRequest {
+    /// Test-only constructor for other crates' tests (feature `test-util`).
+    #[cfg(feature = "test-util")]
+    #[allow(clippy::too_many_arguments)]
+    pub fn for_tests(
+        token: u32,
+        side: Side,
+        lots: u32,
+        lot_size: u32,
+        order_type: OrderType,
+        limit: Option<Paise>,
+        is_exit: bool,
+        now: Ts,
+    ) -> OrderRequest {
+        let reason = if is_exit {
+            ReasonCode::Manual
+        } else {
+            ReasonCode::MomentumUp
+        };
+        OrderRequest::new(
+            token, side, lots, lot_size, order_type, limit, 3, is_exit, "test", reason, now,
+        )
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         token: u32,
@@ -153,6 +176,11 @@ pub struct ApprovedModify {
 }
 
 impl ApprovedModify {
+    #[cfg(feature = "test-util")]
+    pub fn for_tests(qty: u32, limit: Paise) -> ApprovedModify {
+        ApprovedModify::new(qty, limit)
+    }
+
     pub(crate) fn new(qty: u32, limit: Paise) -> ApprovedModify {
         ApprovedModify { qty, limit }
     }

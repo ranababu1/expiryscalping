@@ -14,3 +14,8 @@ tracing.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
+
+[features]
+# Lets other crates' tests build approved orders directly. Never enable it
+# in a normal dependency: it is the only way around the risk engine.
+test-util = []
