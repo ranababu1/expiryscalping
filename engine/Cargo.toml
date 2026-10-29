@@ -1,0 +1,47 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/es-core",
+    "crates/es-kite",
+    "crates/es-feed",
+    "crates/es-market",
+    "crates/es-strategy",
+    "crates/es-risk",
+    "crates/es-oms",
+    "crates/es-broker",
+    "crates/es-archiver",
+    "crates/es-api",
+    "crates/es-replay",
+    "bin/esd",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "UNLICENSED"
+publish = false
+
+[workspace.dependencies]
+es-core = { path = "crates/es-core" }
+es-kite = { path = "crates/es-kite" }
+es-feed = { path = "crates/es-feed" }
+es-market = { path = "crates/es-market" }
+es-strategy = { path = "crates/es-strategy" }
+es-risk = { path = "crates/es-risk" }
+es-oms = { path = "crates/es-oms" }
+es-broker = { path = "crates/es-broker" }
+es-archiver = { path = "crates/es-archiver" }
+es-api = { path = "crates/es-api" }
+es-replay = { path = "crates/es-replay" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util", "fs"] }
+async-trait = "0.1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+panic = "abort"

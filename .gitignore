@@ -1,0 +1,33 @@
+# Rust
+engine/target/
+app/src-tauri/target/
+**/*.rs.bk
+
+# Node
+node_modules/
+app/dist/
+
+# Python
+research/.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.pytest_cache/
+
+# Engine runtime data (device tokens, audit log, recordings, overrides)
+engine/data/
+data/
+*.esraw
+
+# Secrets: never commit
+.env
+.env.*
+secrets.toml
+*.key
+*.pem
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
