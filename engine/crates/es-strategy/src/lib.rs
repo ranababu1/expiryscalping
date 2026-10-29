@@ -11,7 +11,7 @@ use es_market::MarketState;
 
 pub use momentum::{MomentumBreakout, MomentumConfig};
 
-pub trait Strategy: Send {
+pub trait Strategy: Send + Sync {
     fn id(&self) -> &'static str;
     fn on_tick(&mut self, view: &MarketState, tick: &Tick, out: &mut Vec<Signal>);
     fn on_fill(&mut self, fill: &Fill);
