@@ -1,0 +1,76 @@
+:root {
+  --bg: #0d0f12;
+  --panel: #14171c;
+  --panel-2: #1a1e24;
+  --line: #262b33;
+  --text: #d7dbe0;
+  --muted: #7d8590;
+  --accent: #5aa9ff;
+  --up: #3fb950;
+  --down: #f85149;
+  --warn: #d29922;
+  --kill: #e5484d;
+  --radius: 6px;
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+html, body, #app { margin: 0; height: 100%; }
+body { overflow: hidden; }
+
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+.muted { color: var(--muted); }
+.up { color: var(--up); }
+.down { color: var(--down); }
+.warn { color: var(--warn); }
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--muted); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button.primary { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+button.danger { background: #3a1416; border-color: var(--down); color: #ffb4b0; }
+button.small { padding: 2px 8px; font-size: 12px; }
+
+input, select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+}
+input:focus, select:focus, button:focus-visible { outline: 1px solid var(--accent); outline-offset: 0; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 5px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; text-align: left; position: sticky; top: 0; background: var(--panel); }
+th.num { text-align: right; }
+tbody tr:hover { background: var(--panel-2); }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.empty { padding: 32px; text-align: center; color: var(--muted); }
+.badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.badge.ok { color: var(--up); border-color: #23432c; }
+.badge.bad { color: var(--down); border-color: #4b2023; }
+.badge.warn { color: var(--warn); border-color: #4a3b17; }
+.badge.paper { color: var(--accent); border-color: #1d3a5c; }
