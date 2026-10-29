@@ -7,7 +7,8 @@ pub fn norm_cdf(x: f64) -> f64 {
     let t = 1.0 / (1.0 + 0.231_641_9 * x.abs());
     let poly = t
         * (0.319_381_530
-            + t * (-0.356_563_782 + t * (1.781_477_937 + t * (-1.821_255_978 + t * 1.330_274_429))));
+            + t * (-0.356_563_782
+                + t * (1.781_477_937 + t * (-1.821_255_978 + t * 1.330_274_429))));
     let pdf = (-0.5 * x * x).exp() / (2.0 * std::f64::consts::PI).sqrt();
     let upper = pdf * poly;
     if x >= 0.0 { 1.0 - upper } else { upper }
@@ -35,12 +36,20 @@ pub fn price(is_call: bool, spot: f64, strike: f64, t_years: f64, vol: f64) -> f
 
 /// Implied volatility by bisection. `None` if the price is below intrinsic
 /// or no volatility under 500% matches.
-pub fn implied_vol(is_call: bool, premium: f64, spot: f64, strike: f64, t_years: f64) -> Option<f64> {
+pub fn implied_vol(
+    is_call: bool,
+    premium: f64,
+    spot: f64,
+    strike: f64,
+    t_years: f64,
+) -> Option<f64> {
     if t_years <= 0.0 || premium <= 0.0 {
         return None;
     }
     let (mut lo, mut hi) = (1e-4, 5.0);
-    if premium < price(is_call, spot, strike, t_years, lo) || premium > price(is_call, spot, strike, t_years, hi) {
+    if premium < price(is_call, spot, strike, t_years, lo)
+        || premium > price(is_call, spot, strike, t_years, hi)
+    {
         return None;
     }
     for _ in 0..60 {

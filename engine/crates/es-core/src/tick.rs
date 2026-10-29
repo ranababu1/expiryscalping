@@ -19,11 +19,17 @@ pub struct Depth5 {
 
 impl Depth5 {
     pub fn best_bid(&self) -> Option<DepthLevel> {
-        self.bids.first().copied().filter(|l| l.qty > 0 && l.price.0 > 0)
+        self.bids
+            .first()
+            .copied()
+            .filter(|l| l.qty > 0 && l.price.0 > 0)
     }
 
     pub fn best_ask(&self) -> Option<DepthLevel> {
-        self.asks.first().copied().filter(|l| l.qty > 0 && l.price.0 > 0)
+        self.asks
+            .first()
+            .copied()
+            .filter(|l| l.qty > 0 && l.price.0 > 0)
     }
 }
 

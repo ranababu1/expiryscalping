@@ -64,7 +64,13 @@ fn full_mode_packet() {
     let mut fb = FrameBuilder::new();
     fb.push(&full().encode());
     let (r, ticks) = parse(&fb.finish());
-    assert_eq!(r, Ok(FrameKind::Data { ticks: 1, skipped: 0 }));
+    assert_eq!(
+        r,
+        Ok(FrameKind::Data {
+            ticks: 1,
+            skipped: 0
+        })
+    );
     let t = ticks[0];
     assert_eq!(t.token, NFO_TOKEN);
     assert_eq!(t.ltp, Paise(10_005));
@@ -100,7 +106,13 @@ fn quote_mode_packet() {
     let mut fb = FrameBuilder::new();
     fb.push(&full().encode()[..LEN_QUOTE]);
     let (r, ticks) = parse(&fb.finish());
-    assert_eq!(r, Ok(FrameKind::Data { ticks: 1, skipped: 0 }));
+    assert_eq!(
+        r,
+        Ok(FrameKind::Data {
+            ticks: 1,
+            skipped: 0
+        })
+    );
     assert_eq!(ticks[0].volume, 1_234_567);
     assert_eq!(ticks[0].close, Paise(9_500));
     assert_eq!(ticks[0].oi, 0);
@@ -129,7 +141,13 @@ fn index_packets() {
     let mut fb = FrameBuilder::new();
     fb.push(&enc).push(&enc[..LEN_INDEX_QUOTE]);
     let (r, ticks) = parse(&fb.finish());
-    assert_eq!(r, Ok(FrameKind::Data { ticks: 2, skipped: 0 }));
+    assert_eq!(
+        r,
+        Ok(FrameKind::Data {
+            ticks: 2,
+            skipped: 0
+        })
+    );
     assert_eq!(ticks[0].ltp, Paise(2_450_010));
     assert_eq!(ticks[0].close, Paise(2_440_000));
     assert_eq!(ticks[0].exchange_ts, 1_793_000_002);
@@ -149,7 +167,13 @@ fn multi_packet_frame_mixed_modes() {
         .push(&full().encode()[..LEN_QUOTE])
         .push(&full().encode()[..LEN_LTP]);
     let (r, ticks) = parse(&fb.finish());
-    assert_eq!(r, Ok(FrameKind::Data { ticks: 4, skipped: 0 }));
+    assert_eq!(
+        r,
+        Ok(FrameKind::Data {
+            ticks: 4,
+            skipped: 0
+        })
+    );
     assert_eq!(ticks[0].token, NIFTY_INDEX);
     assert!(ticks[1].depth.is_some());
 }
@@ -161,7 +185,13 @@ fn unsupported_segment_and_unknown_length_are_skipped() {
     let mut fb = FrameBuilder::new();
     fb.push(&cds).push(&[0u8; 13]).push(&full().encode());
     let (r, ticks) = parse(&fb.finish());
-    assert_eq!(r, Ok(FrameKind::Data { ticks: 1, skipped: 2 }));
+    assert_eq!(
+        r,
+        Ok(FrameKind::Data {
+            ticks: 1,
+            skipped: 2
+        })
+    );
     assert_eq!(ticks.len(), 1);
 }
 

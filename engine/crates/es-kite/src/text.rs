@@ -72,10 +72,7 @@ mod tests {
             parse_text(r#"{"type":"error","data":"bad"}"#).unwrap(),
             TextMessage::Error("bad".into())
         );
-        assert_eq!(
-            parse_text(r#"{"type":"x"}"#).unwrap(),
-            TextMessage::Unknown
-        );
+        assert_eq!(parse_text(r#"{"type":"x"}"#).unwrap(), TextMessage::Unknown);
         assert!(parse_text("nope").is_err());
     }
 }

@@ -32,7 +32,11 @@ impl Paise {
     pub fn apply_rate_e8(self, rate_e8: u64) -> Paise {
         let v = self.0 as i128 * rate_e8 as i128;
         let q = 100_000_000i128;
-        let rounded = if v >= 0 { (v + q / 2) / q } else { (v - q / 2) / q };
+        let rounded = if v >= 0 {
+            (v + q / 2) / q
+        } else {
+            (v - q / 2) / q
+        };
         Paise(rounded as i64)
     }
 

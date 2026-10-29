@@ -1,0 +1,17 @@
+[package]
+name = "es-replay"
+description = "Tick sources for Phase 1: a synthetic expiry day simulator and raw log replay"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+es-core.workspace = true
+es-kite.workspace = true
+es-feed.workspace = true
+es-archiver.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true

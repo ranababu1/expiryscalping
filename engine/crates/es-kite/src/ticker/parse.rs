@@ -16,7 +16,10 @@ pub enum FrameKind {
     Heartbeat,
     /// A data frame; `ticks` were appended, `skipped` packets were ignored
     /// (unknown length or unsupported segment).
-    Data { ticks: usize, skipped: usize },
+    Data {
+        ticks: usize,
+        skipped: usize,
+    },
 }
 
 /// Allocation-free parser. The caller owns and reuses the output vector.

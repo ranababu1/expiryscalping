@@ -63,8 +63,8 @@ impl Ts {
 
     /// The timestamp for an IST wall time on a date.
     pub fn at_ist(date: Date, hour: u32, minute: u32, second: u32) -> Ts {
-        let secs = date.days() * 86_400 + (hour * 3600 + minute * 60 + second) as i64
-            - IST_OFFSET_SECS;
+        let secs =
+            date.days() * 86_400 + (hour * 3600 + minute * 60 + second) as i64 - IST_OFFSET_SECS;
         Ts::from_secs(secs)
     }
 }
@@ -137,7 +137,11 @@ impl Date {
         let d = (doy - (153 * mp + 2) / 5 + 1) as u8;
         let m = if mp < 10 { mp + 3 } else { mp - 9 } as u8;
         let year = (y + if m <= 2 { 1 } else { 0 }) as i32;
-        Date { year, month: m, day: d }
+        Date {
+            year,
+            month: m,
+            day: d,
+        }
     }
 
     /// 0 = Monday ... 6 = Sunday.

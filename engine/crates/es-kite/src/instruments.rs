@@ -48,7 +48,11 @@ pub fn parse_rupees(s: &str) -> Option<Paise> {
     }
     let (neg, s) = s.strip_prefix('-').map_or((false, s), |r| (true, r));
     let (whole, frac) = s.split_once('.').unwrap_or((s, ""));
-    let whole: i64 = if whole.is_empty() { 0 } else { whole.parse().ok()? };
+    let whole: i64 = if whole.is_empty() {
+        0
+    } else {
+        whole.parse().ok()?
+    };
     let mut frac2 = String::from(frac);
     if !frac2.chars().all(|c| c.is_ascii_digit()) {
         return None;
@@ -102,7 +106,9 @@ pub fn parse_csv(csv: &str) -> Result<Vec<Instrument>, InstrumentsError> {
             ("FUT", _) => InstrumentKind::Fut,
             _ => continue,
         };
-        let token: u32 = get(c_token).parse().map_err(|_| bad("bad instrument_token"))?;
+        let token: u32 = get(c_token)
+            .parse()
+            .map_err(|_| bad("bad instrument_token"))?;
         let expiry = match get(c_expiry) {
             "" => None,
             s => Some(Date::parse(s).map_err(|_| bad("bad expiry"))?),
