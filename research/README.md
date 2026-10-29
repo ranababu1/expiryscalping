@@ -10,5 +10,5 @@ and produces reports, model files and setting proposals only.
 uv sync
 uv run ruff check .
 uv run pytest
-uv run python -m es_research.rawlog ../engine/data/raw/<file>.esraw
+uv run python -m es_research.rawlog ../engine/data/raw/<file>.eslog
 ```
