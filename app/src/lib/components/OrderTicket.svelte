@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import { engine } from "../engine.svelte";
   import { price, parseRupees, rupees } from "../format";
   import { ticket, type Ticket } from "../ticket.svelte";
@@ -8,12 +9,21 @@
   }
   let { t }: Props = $props();
 
-  const initialLots = t.kind === "modify" ? Math.max(1, Math.round(t.order.qty / Math.max(1, t.lotSize))) : 1;
-  const initialLimit =
-    t.kind === "modify" ? (t.order.limit !== null ? (t.order.limit / 100).toFixed(2) : "") : t.ask !== null ? (t.ask / 100).toFixed(2) : "";
+  function initial(x: Ticket): { lots: number; limit: string } {
+    if (x.kind === "modify") {
+      return {
+        lots: Math.max(1, Math.round(x.order.qty / Math.max(1, x.lotSize))),
+        limit: x.order.limit !== null ? (x.order.limit / 100).toFixed(2) : "",
+      };
+    }
+    return { lots: 1, limit: x.ask !== null ? (x.ask / 100).toFixed(2) : "" };
+  }
+  // The ticket is re-created for every new order (keyed in App), so the
+  // initial values are taken once on purpose.
+  const init = untrack(() => initial(t));
 
-  let lots = $state(initialLots);
-  let limitText = $state(initialLimit);
+  let lots = $state(init.lots);
+  let limitText = $state(init.limit);
   let busy = $state(false);
   let error = $state("");
 
