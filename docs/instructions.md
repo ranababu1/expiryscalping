@@ -92,9 +92,12 @@ Engine (from `engine/`):
 
 ```powershell
 cargo fmt --all
-cargo clippy --all-targets -- -D warnings
-cargo test --all
-cargo run -p esd -- --mode paper --source replay <file>
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+cargo run -p esd -- sim                       # simulated day, API on 127.0.0.1:7400
+cargo run -p esd -- sim --speed 0 --headless  # whole day, print summary
+cargo run -p esd -- replay <file.esraw>       # replay a recorded raw log
+cargo run -p esd -- device add <name>         # new app token (shown once)
 ```
 
 Desktop app (from `app/`):
