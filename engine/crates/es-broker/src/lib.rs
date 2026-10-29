@@ -41,6 +41,8 @@ pub enum BrokerOrderStatus {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct BrokerOrder {
     pub id: BrokerOrderId,
+    /// Our tag, used to match orders whose state is unknown.
+    pub tag: String,
     pub token: u32,
     pub side: Side,
     pub qty: u32,
@@ -64,8 +66,11 @@ pub struct Margins {
 /// Order updates from the broker (postbacks for Kite, simulated for paper).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BrokerEvent {
+    /// One execution. `trade_id` is unique per execution, so a duplicate
+    /// postback can be detected.
     Fill {
         id: BrokerOrderId,
+        trade_id: String,
         qty: u32,
         price: Paise,
         ts: Ts,
@@ -89,7 +94,7 @@ pub enum BrokerEvent {
 
 #[async_trait]
 pub trait Broker: Send + Sync {
-    async fn place(&self, req: &OrderRequest) -> Result<BrokerOrderId, BrokerError>;
+    async fn place(&self, req: &OrderRequest, tag: &str) -> Result<BrokerOrderId, BrokerError>;
     async fn modify(&self, id: &BrokerOrderId, m: ApprovedModify) -> Result<(), BrokerError>;
     async fn cancel(&self, id: &BrokerOrderId) -> Result<(), BrokerError>;
     async fn orders(&self) -> Result<Vec<BrokerOrder>, BrokerError>;

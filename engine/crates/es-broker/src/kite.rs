@@ -11,7 +11,7 @@ const PHASE3: &str = "the Kite broker arrives in Phase 3";
 
 #[async_trait]
 impl Broker for KiteBroker {
-    async fn place(&self, _req: &OrderRequest) -> Result<BrokerOrderId, BrokerError> {
+    async fn place(&self, _req: &OrderRequest, _tag: &str) -> Result<BrokerOrderId, BrokerError> {
         Err(BrokerError::NotAvailable(PHASE3))
     }
     async fn modify(&self, _id: &BrokerOrderId, _m: ApprovedModify) -> Result<(), BrokerError> {

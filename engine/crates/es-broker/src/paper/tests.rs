@@ -80,7 +80,7 @@ async fn no_fill_before_latency_then_fills_at_best_ask() {
         ..Default::default()
     });
     b.on_tick(&tick(0));
-    let id = b.place(&buy(1, 10_000)).await.unwrap();
+    let id = b.place(&buy(1, 10_000), "T").await.unwrap();
     b.on_tick(&tick(49));
     assert!(fills(&events(&b)).is_empty());
     b.on_tick(&tick(50));
@@ -94,7 +94,7 @@ async fn walks_depth_up_to_limit_and_leaves_rest_open() {
     let b = instant();
     b.on_tick(&tick(0));
     // 3 lots = 195, limit 100.05 reaches the first two levels only.
-    let id = b.place(&buy(3, 10_005)).await.unwrap();
+    let id = b.place(&buy(3, 10_005), "T").await.unwrap();
     let ev = events(&b);
     assert_eq!(fills(&ev), vec![(65, 10_000), (65, 10_005)]);
     assert!(!ev.iter().any(|e| matches!(e, BrokerEvent::Complete { .. })));
@@ -114,7 +114,7 @@ async fn walks_depth_up_to_limit_and_leaves_rest_open() {
 async fn limit_below_ask_does_not_fill() {
     let b = instant();
     b.on_tick(&tick(0));
-    b.place(&buy(1, 9_995)).await.unwrap();
+    b.place(&buy(1, 9_995), "T").await.unwrap();
     b.on_tick(&tick(10));
     assert!(fills(&events(&b)).is_empty());
 }
@@ -127,10 +127,12 @@ async fn slippage_is_against_us() {
         ..Default::default()
     });
     b.on_tick(&tick(0));
-    b.place(&buy(1, 10_100)).await.unwrap();
+    b.place(&buy(1, 10_100), "T").await.unwrap();
     assert_eq!(fills(&events(&b)), vec![(65, 10_005)]);
     b.on_tick(&tick(10));
-    b.place(&limit(Side::Sell, 1, 9_900, true)).await.unwrap();
+    b.place(&limit(Side::Sell, 1, 9_900, true), "T")
+        .await
+        .unwrap();
     assert_eq!(fills(&events(&b)), vec![(65, 9_990)]);
     assert!(b.positions().await.unwrap().is_empty());
 }
@@ -145,7 +147,7 @@ async fn market_order_bounded_by_protection() {
     }
     b.on_tick(&t);
     let m = OrderRequest::for_tests(TOK, Side::Buy, 3, 65, OrderType::Market, None, false, ts(0));
-    b.place(&m).await.unwrap();
+    b.place(&m, "T").await.unwrap();
     assert_eq!(fills(&events(&b)), vec![(65, 10_000), (65, 10_300)]);
 }
 
@@ -153,7 +155,7 @@ async fn market_order_bounded_by_protection() {
 async fn positions_and_margins_track_fills() {
     let b = instant();
     b.on_tick(&tick(0));
-    b.place(&buy(1, 10_000)).await.unwrap();
+    b.place(&buy(1, 10_000), "T").await.unwrap();
     assert_eq!(
         b.positions().await.unwrap(),
         vec![Position {
@@ -169,7 +171,7 @@ async fn positions_and_margins_track_fills() {
 async fn modify_and_cancel() {
     let b = instant();
     b.on_tick(&tick(0));
-    let id = b.place(&buy(1, 9_900)).await.unwrap();
+    let id = b.place(&buy(1, 9_900), "T").await.unwrap();
     // Raising the limit to the ask fills immediately.
     b.modify(&id, ApprovedModify::for_tests(65, Paise(10_000)))
         .await
@@ -179,7 +181,7 @@ async fn modify_and_cancel() {
     assert_eq!(fills(&ev), vec![(65, 10_000)]);
     assert_eq!(b.cancel(&id).await, Err(BrokerError::NotOpen));
 
-    let id2 = b.place(&buy(1, 9_000)).await.unwrap();
+    let id2 = b.place(&buy(1, 9_000), "T").await.unwrap();
     b.cancel(&id2).await.unwrap();
     assert_eq!(events(&b), vec![BrokerEvent::Cancelled { id: id2.clone() }]);
     assert_eq!(b.cancel(&id2).await, Err(BrokerError::NotOpen));
@@ -194,7 +196,7 @@ async fn modify_and_cancel() {
 async fn modify_below_filled_is_rejected() {
     let b = instant();
     b.on_tick(&tick(0));
-    let id = b.place(&buy(3, 10_000)).await.unwrap(); // fills 65 of 195
+    let id = b.place(&buy(3, 10_000), "T").await.unwrap(); // fills 65 of 195
     let r = b
         .modify(&id, ApprovedModify::for_tests(0, Paise(10_000)))
         .await;

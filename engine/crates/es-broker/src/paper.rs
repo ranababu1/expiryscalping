@@ -38,6 +38,8 @@ impl Default for PaperConfig {
 #[derive(Debug, Clone)]
 struct PaperOrder {
     id: BrokerOrderId,
+    tag: String,
+    trades: u32,
     token: u32,
     side: Side,
     qty: u32,
@@ -156,18 +158,21 @@ impl PaperBroker {
             }
         }
         for (i, q, price) in fills {
-            let (id, token, side, done) = {
+            let (id, trade_id, token, side, done) = {
                 let o = &mut g.orders[i];
                 o.filled += q;
+                o.trades += 1;
+                let trade_id = format!("{}-T{}", o.id.0, o.trades);
                 if o.filled == o.qty {
                     o.status = BrokerOrderStatus::Complete;
                 }
-                (o.id.clone(), o.token, o.side, o.filled == o.qty)
+                (o.id.clone(), trade_id, o.token, o.side, o.filled == o.qty)
             };
             *g.positions.entry(token).or_insert(0) += side.sign() * q as i64;
             g.cash -= price.times(side.sign() * q as i64);
             g.events.push(BrokerEvent::Fill {
                 id: id.clone(),
+                trade_id,
                 qty: q,
                 price,
                 ts: now,
@@ -181,7 +186,7 @@ impl PaperBroker {
 
 #[async_trait]
 impl Broker for PaperBroker {
-    async fn place(&self, req: &OrderRequest) -> Result<BrokerOrderId, BrokerError> {
+    async fn place(&self, req: &OrderRequest, tag: &str) -> Result<BrokerOrderId, BrokerError> {
         let mut g = self.lock();
         if req.qty() == 0 {
             return Err(BrokerError::Rejected("zero quantity".into()));
@@ -191,6 +196,8 @@ impl Broker for PaperBroker {
         let eligible_at = g.now.plus_ms(self.cfg.latency_ms);
         g.orders.push(PaperOrder {
             id: id.clone(),
+            tag: tag.to_string(),
+            trades: 0,
             token: req.token(),
             side: req.side(),
             qty: req.qty(),
@@ -266,6 +273,7 @@ impl Broker for PaperBroker {
             .iter()
             .map(|o| BrokerOrder {
                 id: o.id.clone(),
+                tag: o.tag.clone(),
                 token: o.token,
                 side: o.side,
                 qty: o.qty,
