@@ -233,7 +233,7 @@ pub struct LatencyDto {
 #[ts(export)]
 pub struct StatusDto {
     pub mode: Mode,
-    /// `sim`, `replay` or `kite`.
+    /// Where ticks come from, for example `simulator 2026-10-30 x10` or `replay <file>`.
     pub source: String,
     pub engine_version: String,
     /// Engine (market) time.
@@ -241,7 +241,7 @@ pub struct StatusDto {
     pub engine_time: i64,
     pub market_open: bool,
     pub feed: FeedDto,
-    /// `not_connected` until the Kite broker exists (Phase 2 and 3).
+    /// Kite connection state for display. Always "not connected" in Phase 1.
     pub kite: String,
     pub ai_paused: bool,
     pub kill: KillDto,

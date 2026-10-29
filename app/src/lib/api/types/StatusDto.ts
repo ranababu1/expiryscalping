@@ -6,7 +6,7 @@ import type { Mode } from "./Mode";
 
 export type StatusDto = { mode: Mode, 
 /**
- * `sim`, `replay` or `kite`.
+ * Where ticks come from, for example `simulator 2026-10-30 x10` or `replay <file>`.
  */
 source: string, engine_version: string, 
 /**
@@ -14,6 +14,6 @@ source: string, engine_version: string,
  */
 engine_time: number, market_open: boolean, feed: FeedDto, 
 /**
- * `not_connected` until the Kite broker exists (Phase 2 and 3).
+ * Kite connection state for display. Always "not connected" in Phase 1.
  */
 kite: string, ai_paused: boolean, kill: KillDto, latency: LatencyDto, replay_done: boolean, };
