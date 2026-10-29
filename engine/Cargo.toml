@@ -1,19 +1,6 @@
 [workspace]
 resolver = "3"
-members = [
-    "crates/es-core",
-    "crates/es-kite",
-    "crates/es-feed",
-    "crates/es-market",
-    "crates/es-strategy",
-    "crates/es-risk",
-    "crates/es-oms",
-    "crates/es-broker",
-    "crates/es-archiver",
-    "crates/es-api",
-    "crates/es-replay",
-    "bin/esd",
-]
+members = ["crates/*"]
 
 [workspace.package]
 version = "0.1.0"
