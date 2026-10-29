@@ -18,8 +18,8 @@ mod portfolio;
 pub use limits::{CallCounter, KiteLimits};
 pub use portfolio::Position;
 
-use es_broker::{BrokerError, BrokerEvent, BrokerOrder, BrokerOrderId, BrokerOrderStatus};
 use es_broker::charges::ChargesConfig;
+use es_broker::{BrokerError, BrokerEvent, BrokerOrder, BrokerOrderId, BrokerOrderStatus};
 use es_core::{Fill, OrderId, OrderType, Paise, ReasonCode, Side, Ts};
 use es_risk::{OpenOrderView, OrderRequest, PortfolioView, PositionView};
 use serde::Serialize;
@@ -126,7 +126,10 @@ pub enum OmsUpdate {
     Order(OrderId),
     Fill(Fill),
     /// A position went flat. `pnl` is net of charges, for the loss streak.
-    TradeClosed { token: u32, pnl: Paise },
+    TradeClosed {
+        token: u32,
+        pnl: Paise,
+    },
 }
 
 pub struct Oms {
@@ -268,11 +271,7 @@ impl Oms {
     }
 
     /// Starts a modification. Counts toward Kite's 25 per order.
-    pub fn begin_modify(
-        &mut self,
-        id: OrderId,
-        now: Ts,
-    ) -> Result<BrokerOrderId, OmsError> {
+    pub fn begin_modify(&mut self, id: OrderId, now: Ts) -> Result<BrokerOrderId, OmsError> {
         let max = self.limits.max_modifications;
         let o = self.orders.get_mut(&id).ok_or(OmsError::UnknownOrder)?;
         if !matches!(o.state, OrderState::Open | OrderState::PartiallyFilled) {
@@ -294,7 +293,9 @@ impl Oms {
     }
 
     pub fn on_modify_result(&mut self, id: OrderId, result: Result<(), BrokerError>, now: Ts) {
-        let Some(o) = self.orders.get_mut(&id) else { return };
+        let Some(o) = self.orders.get_mut(&id) else {
+            return;
+        };
         if o.state != OrderState::ModifyPending {
             return;
         }
@@ -327,7 +328,9 @@ impl Oms {
     }
 
     pub fn on_cancel_result(&mut self, id: OrderId, result: Result<(), BrokerError>, now: Ts) {
-        let Some(o) = self.orders.get_mut(&id) else { return };
+        let Some(o) = self.orders.get_mut(&id) else {
+            return;
+        };
         if o.state != OrderState::CancelPending {
             return;
         }
@@ -373,52 +376,52 @@ impl Oms {
                 self.apply_fill(id, *qty, *price, *ts, now, &mut out);
             }
             BrokerEvent::Complete { .. } => {
-                if let Some(o) = self.orders.get_mut(&id) {
-                    if !o.state.is_terminal() {
-                        o.complete_seen = true;
-                        if o.filled >= o.qty {
-                            o.state = OrderState::Complete;
-                        }
-                        o.updated_at = now;
-                        out.push(OmsUpdate::Order(id));
+                if let Some(o) = self.orders.get_mut(&id)
+                    && !o.state.is_terminal()
+                {
+                    o.complete_seen = true;
+                    if o.filled >= o.qty {
+                        o.state = OrderState::Complete;
                     }
+                    o.updated_at = now;
+                    out.push(OmsUpdate::Order(id));
                 }
             }
             BrokerEvent::Cancelled { .. } => {
-                if let Some(o) = self.orders.get_mut(&id) {
-                    if !o.state.is_terminal() {
-                        o.state = OrderState::Cancelled;
-                        o.updated_at = now;
-                        out.push(OmsUpdate::Order(id));
-                    }
+                if let Some(o) = self.orders.get_mut(&id)
+                    && !o.state.is_terminal()
+                {
+                    o.state = OrderState::Cancelled;
+                    o.updated_at = now;
+                    out.push(OmsUpdate::Order(id));
                 }
             }
             BrokerEvent::Rejected { reason, .. } => {
-                if let Some(o) = self.orders.get_mut(&id) {
-                    if !o.state.is_terminal() {
-                        o.state = OrderState::Rejected;
-                        o.message = Some(reason.clone());
-                        o.updated_at = now;
-                        out.push(OmsUpdate::Order(id));
-                    }
+                if let Some(o) = self.orders.get_mut(&id)
+                    && !o.state.is_terminal()
+                {
+                    o.state = OrderState::Rejected;
+                    o.message = Some(reason.clone());
+                    o.updated_at = now;
+                    out.push(OmsUpdate::Order(id));
                 }
             }
             BrokerEvent::Modified { qty, limit, .. } => {
-                if let Some(o) = self.orders.get_mut(&id) {
-                    if !o.state.is_terminal() {
-                        o.qty = *qty;
-                        o.limit = Some(*limit);
-                        o.order_type = OrderType::Limit;
-                        if o.state == OrderState::ModifyPending {
-                            o.before_pending = None;
-                            o.state = o.open_state();
-                        }
-                        if o.filled >= o.qty {
-                            o.state = OrderState::Complete;
-                        }
-                        o.updated_at = now;
-                        out.push(OmsUpdate::Order(id));
+                if let Some(o) = self.orders.get_mut(&id)
+                    && !o.state.is_terminal()
+                {
+                    o.qty = *qty;
+                    o.limit = Some(*limit);
+                    o.order_type = OrderType::Limit;
+                    if o.state == OrderState::ModifyPending {
+                        o.before_pending = None;
+                        o.state = o.open_state();
                     }
+                    if o.filled >= o.qty {
+                        o.state = OrderState::Complete;
+                    }
+                    o.updated_at = now;
+                    out.push(OmsUpdate::Order(id));
                 }
             }
         }
@@ -434,12 +437,15 @@ impl Oms {
         now: Ts,
         out: &mut Vec<OmsUpdate>,
     ) {
-        let Some(o) = self.orders.get_mut(&id) else { return };
+        let Some(o) = self.orders.get_mut(&id) else {
+            return;
+        };
         // Fills are always booked, even late ones after a cancel: positions
         // must match the exchange.
         let prev = o.filled as i128 * o.avg_fill_price.0 as i128;
         o.filled += qty;
-        o.avg_fill_price = Paise(((prev + qty as i128 * price.0 as i128) / o.filled.max(1) as i128) as i64);
+        o.avg_fill_price =
+            Paise(((prev + qty as i128 * price.0 as i128) / o.filled.max(1) as i128) as i64);
         let first = !o.charged_brokerage;
         o.charged_brokerage = true;
         let turnover = price.times(qty as i64);
@@ -447,13 +453,19 @@ impl Oms {
         if !o.state.is_terminal() {
             if o.filled >= o.qty {
                 o.state = OrderState::Complete;
-            } else if matches!(o.state, OrderState::Open | OrderState::Sent | OrderState::Unknown) {
+            } else if matches!(
+                o.state,
+                OrderState::Open | OrderState::Sent | OrderState::Unknown
+            ) {
                 o.state = OrderState::PartiallyFilled;
             }
         }
         o.updated_at = now;
         let (token, side, strategy) = (o.token, o.side, o.strategy);
-        let pos = self.positions.entry(token).or_insert_with(|| Position::new(token));
+        let pos = self
+            .positions
+            .entry(token)
+            .or_insert_with(|| Position::new(token));
         let closed = pos.apply(side, qty, price, charges);
         out.push(OmsUpdate::Fill(Fill {
             order: id,
@@ -475,7 +487,8 @@ impl Oms {
         let mut v = Vec::new();
         for o in self.orders.values_mut() {
             if o.state == OrderState::Sent
-                && o.sent_at.is_some_and(|s| now.ms_since(s) >= sent_timeout_ms)
+                && o.sent_at
+                    .is_some_and(|s| now.ms_since(s) >= sent_timeout_ms)
             {
                 o.state = OrderState::Unknown;
                 o.message = Some("no reply from broker, reconciling".into());
@@ -504,7 +517,9 @@ impl Oms {
             .collect();
         let mut out = Vec::new();
         for id in unknown {
-            let Some(o) = self.orders.get_mut(&id) else { continue };
+            let Some(o) = self.orders.get_mut(&id) else {
+                continue;
+            };
             match book.iter().find(|b| b.tag == o.tag) {
                 None => {
                     o.state = OrderState::Rejected;

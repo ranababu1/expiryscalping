@@ -51,8 +51,8 @@ impl Position {
         if self.qty == 0 || self.qty.signum() == signed.signum() {
             // Opening or adding: weighted average, rounded to the paisa.
             let total = self.qty + signed;
-            let cost = self.avg_price.0 as i128 * self.qty.abs() as i128
-                + price.0 as i128 * qty as i128;
+            let cost =
+                self.avg_price.0 as i128 * self.qty.abs() as i128 + price.0 as i128 * qty as i128;
             self.avg_price = Paise((cost / total.abs() as i128) as i64);
             self.qty = total;
         } else {
@@ -95,7 +95,10 @@ mod tests {
         assert_eq!((p.qty, p.avg_price), (0, Paise::ZERO));
         // Next trade's P&L starts from zero.
         p.apply(Side::Buy, 65, Paise(10_000), Paise(0));
-        assert_eq!(p.apply(Side::Sell, 65, Paise(9_900), Paise(0)), Some(Paise(-6_500)));
+        assert_eq!(
+            p.apply(Side::Sell, 65, Paise(9_900), Paise(0)),
+            Some(Paise(-6_500))
+        );
         assert_eq!(p.realised(), Paise(-400));
     }
 
@@ -104,6 +107,9 @@ mod tests {
         let mut p = Position::new(1);
         p.apply(Side::Buy, 10, Paise(100), Paise::ZERO);
         p.apply(Side::Sell, 15, Paise(110), Paise::ZERO);
-        assert_eq!((p.qty, p.avg_price, p.realised_gross), (-5, Paise(110), Paise(100)));
+        assert_eq!(
+            (p.qty, p.avg_price, p.realised_gross),
+            (-5, Paise(110), Paise(100))
+        );
     }
 }
