@@ -31,3 +31,4 @@ secrets.toml
 Thumbs.db
 .vscode/
 .idea/
+app/src-tauri/gen/
